@@ -219,7 +219,16 @@ public static class ExtensionFuncs  {
         return lm == (lm | (1 << layer)); //see above
     }
 
-    
+    public static List<string> GetStringListOfEnums(this System.Type t) 
+    {
+        if (!t.IsEnum)
+        {
+            Debug.LogError("Get string list of enums called on not an enum");
+            return new List<string>();
+        }
+        else
+            return Enum.GetNames(t).ToList();
+    }
 
     public static T GetRandom<T>(this T[] v)
     {
@@ -263,7 +272,18 @@ public static class ExtensionFuncs  {
 		return toRet;
 	}
 
-    
+    public static G[] CastToAnotherType<T,G>(this System.Collections.Generic.IEnumerable<T> v)
+    {
+        return v.Select(x => (G)Convert.ChangeType(x, typeof(G))).ToArray();
+    }
+
+    public static MethodInfo[] GetAllMethodsWithAttribute<T>(this System.Type t, bool withInheritance = false) where T : Attribute
+    {
+        return 
+          t.GetMethods()
+         .Where(m => m.GetCustomAttributes(typeof(T), withInheritance).Length > 0)
+         .ToArray();
+    }
 
     public static string CollectionToString<T>(this System.Collections.Generic.ICollection<T> v)
     {
